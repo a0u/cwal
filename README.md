@@ -53,6 +53,7 @@ distinct phases:
 * Run
   * FreeBSD: [network install images](https://download.freebsd.org/ftp/releases/amd64/amd64/ISO-IMAGES/12.0/)
     (`*-bootonly.iso` or `*-mini-memstick.img`)
+  * EC2: [AWS CLI](https://aws.amazon.com/cli/)
 
 ## Addendum
 
