@@ -1,0 +1,3 @@
+all: .DEFAULT
+.DEFAULT:
+	@gmake ${.MAKEFLAGS} ${.TARGETS}
