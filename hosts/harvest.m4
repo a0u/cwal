@@ -1,0 +1,10 @@
+CWAL_BEGIN([aws])
+
+EC2_SUBNET([SI])
+EC2_INSTANCE([HARVEST], [m4.xlarge], AMI_FREEBSD_12(), [SI],
+	[EC2_BLKDEVMAP(
+		[EC2_VOL_ROOT([16])],
+		[EC2_VOL_BLANK([/dev/sdf], [32])])],
+	[172.16.2.5])
+
+CWAL_END()

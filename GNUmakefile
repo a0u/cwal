@@ -4,7 +4,10 @@
 
 M4 ?= m4
 
-hosts :=
+hosts := \
+	promptuary \
+	harvest \
+	1ess
 
 objs := $(hosts:%=build/%)
 
