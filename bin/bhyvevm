@@ -1,0 +1,85 @@
+#!/bin/sh
+#
+# SPDX-License-Identifier: BSD-2-Clause
+# Copyright (C) 2019 Albert Ou <aou@eecs.berkeley.edu>
+#
+set -e
+
+readonly vm="vm$$"
+readonly wrkdir="${TMPDIR:-/tmp}"
+
+_clean() {
+	! test -e "/dev/vmm/${vm}" || bhyvectl --vm="${vm}" --destroy
+}
+
+_fetch() {
+	iso="${wrkdir}/${2:-${1##*/}}"
+	( cd "${wrkdir}" && fetch -m ${2:+-o "$2"} "$1" ; )
+}
+
+_usage() {
+	echo "usage: ${0} [-s os] [-c cpu] [-m mem] [-b blk] [-n net]" >&2
+	exit 1
+}
+
+sys=''
+cpu=1
+mem='512M'
+blk='/dev/md0'
+net='tap0'
+
+while getopts s:c:m:b:n:h opt ; do
+	case ${opt} in
+	s) sys=${OPTARG} ;;
+	c) cpu=${OPTARG} ;;
+	m) mem=${OPTARG} ;;
+	b) blk=${OPTARG} ;;
+	n) net=${OPTARG} ;;
+	?) _usage ;;
+	esac
+done
+
+kldstat -q -m vmm || kldload vmm
+
+ver=''
+case ${sys} in
+*-*) ver=${sys#*-} ;;
+esac
+
+case ${sys%%-*} in
+freebsd)
+	ver=${ver:-12.0}
+	_fetch "https://download.freebsd.org/ftp/releases/amd64/amd64/ISO-IMAGES/${ver}/FreeBSD-${ver}-RELEASE-amd64-bootonly.iso"
+	;;
+gentoo)
+	site='http://distfiles.gentoo.org/releases/amd64/autobuilds'
+	dist="$(fetch -q -o - "${site}/latest-iso.txt" |
+		sed -n '/^\([^[:space:]]*install[^[:space:]]*\).*/{s//\1/p;q;}')"
+	_fetch "${site}/${dist}"
+	;;
+alpine)
+	ver=${ver:-3.10.1}
+	_fetch "http://dl-cdn.alpinelinux.org/alpine/v${ver%.*}/releases/x86_64/alpine-standard-${ver}-x86_64.iso"
+	;;
+sysresccd)
+	ver=${ver:-6.0.3}
+	_fetch "https://osdn.net/frs/redir.php?m=gigenet&f=/storage/g/s/sy/systemrescuecd/releases/${ver}/systemrescuecd-${ver}.iso"
+#	_fetch "https://downloads.sourceforge.net/project/systemrescuecd/sysresccd-x86/${ver}/systemrescuecd-${ver}.iso"
+	;;
+'')
+	iso='' ;;
+*)
+	echo 'supported images: freebsd gentoo alpine sysreccd' >&2
+	exit 2 ;;
+esac
+
+trap _clean EXIT INT TERM
+
+bhyve -A -H -P -u \
+	-s 0:0,hostbridge \
+	-s 1:0,lpc \
+	-l bootrom,'/usr/local/share/uefi-firmware/BHYVE_UEFI.fd' \
+	${net:+-s 2:0,virtio-net,"${net}"} \
+	${blk:+-s 3:0,virtio-blk,"${blk}"} \
+	${iso:+-s 4:0,ahci-cd,"${iso}"} \
+	-l com1,stdio -c "${cpu}" -m "${mem}" "${vm}"
