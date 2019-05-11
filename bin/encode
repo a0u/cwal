@@ -1,0 +1,16 @@
+#!/bin/sh
+# Portable wrapper script for Base64 file encoding
+#
+# SPDX-License-Identifier: BSD-2-Clause
+# Copyright (C) 2019 Albert Ou <aou@eecs.berkeley.edu>
+#
+set -e
+if command -v base64 > /dev/null ; then
+	base64 ${1:+"$1"} # GNU coreutils
+elif command -v b64encode > /dev/null ; then
+	b64encode -r ${1:+"$1"} '' # BSD
+elif command -v openssl > /dev/null ; then
+	openssl base64 ${1:+-in "$1"}
+else
+	exit 1
+fi
