@@ -1,7 +1,7 @@
 divert(-1)
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# Copyright 2018 Albert Ou <aou@eecs.berkeley.edu>
+# Copyright 2018-2020 Albert Ou <aou@eecs.berkeley.edu>
 
 # Inspired by and partly derived from the M4sugar library in Autoconf
 
@@ -36,6 +36,19 @@ define([M4_QUOTE], [[$*]])
 # Return ARGS as a quoted list of quoted arguments.
 #
 define([M4_DQUOTE], [[$@]])
+
+# M4_LQUOTE()
+# Return a literal opening quote character.
+#
+# <https://lists.gnu.org/archive/html/m4-discuss/2015-04/msg00005.html>
+define([M4_LQUOTE],
+changequote(`,')`changequote(`,')[changequote([,])'changequote([,]))
+
+# M4_LQUOTE()
+# Return a literal closing quote character.
+#
+define([M4_RQUOTE],
+changequote(`,')`changequote(`,')]changequote([,])'changequote([,]))
 
 ##
 ## Text

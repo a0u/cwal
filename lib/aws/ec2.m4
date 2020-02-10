@@ -75,11 +75,11 @@ undefine([_EC2_VAR_SECGROUP])
 define([EC2_VOL_ROOT],
 [ifdef([_EC2_AMI],, [M4_FATAL([$0: must be used within EC2_INSTANCE macro])])]dnl
 [M4_IFBLANK([$1], [M4_FATAL([$0: non-empty argument required for size])])]dnl
-[DeviceName='EC2_VAR([rootdev],
+[{\"DeviceName\":\"EC2_VAR([rootdev],
 [EC2_QUERY([describe-images],
 	['Images[[0]].BlockDeviceMappings[[0]].DeviceName'],
 	[--filters 'Name=image-id,Values="_EC2_AMI()"'])]dnl
-)',Ebs={VolumeSize=[$1]}])
+)\",\"Ebs\":{\"VolumeSize\":[$1]}}])
 
 # EC2_VOL_BLANK(<DEV>, <SIZE>, [TYPE])
 # Create block device mapping for a blank volume.
@@ -87,14 +87,14 @@ define([EC2_VOL_ROOT],
 define([EC2_VOL_BLANK],
 [M4_IFBLANK([$1], [M4_FATAL([$0: non-empty argument required for device name])])]dnl
 [M4_IFBLANK([$2], [M4_FATAL([$0: non-empty argument required for size])])]dnl
-[DeviceName='$1',Ebs={DeleteOnTermination=false,VolumeSize=$2,]dnl
-[VolumeType='M4_IFBLANK([$3], [gp2], [$3])',Encrypted=true}])
+[{\"DeviceName\":\"$1\",\"Ebs\":{\"DeleteOnTermination\":false,\"VolumeSize\":$2,]dnl
+[\"VolumeType\":\"M4_IFBLANK([$3], [gp2], [$3])\",\"Encrypted\":true}}])
 
 # EC2_BLKDEVMAP(<ENTRY>...)
 # Concatenate block device mappings.
 #
 define([EC2_BLKDEVMAP],
-["M4_JOIN([,], $@)"])
+["M4_LQUOTE()M4_JOIN([,], $@)M4_RQUOTE()"])
 
 
 # EC2_INSTANCE(<NAME>, <TYPE>, <AMI>, <KEYPAIR>, [BLKDEVMAP], [IPADDR])
@@ -108,11 +108,11 @@ define([EC2_INSTANCE],
 [pushdef([_EC2_AMI], [$3])]dnl
 [M4_DIVERT_TEXT([2],
 [EC2_CMD([run-instances],,
+	[--dry-run],
 	[--count 1],
 	[--instance-type '[$2]'],
 	[--image-id '[$3]'],
 	[--key-name [$4]],
-	[--dry-run],
 	[--tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value="$1"}]'],
 	[ifdef([_EC2_VAR_SUBNET], [--subnet-id "_EC2_VAR_SUBNET()"])],
 	[ifdef([_EC2_VAR_SECGROUP], [--security-group-ids "_EC2_VAR_SECGROUP()"])],
