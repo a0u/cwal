@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
-# Copyright (C) 2019 Albert Ou <aou@eecs.berkeley.edu>
+# Copyright (C) 2019-2020 Albert Ou <aou@eecs.berkeley.edu>
 
 define([AWS_REGION], [us-west-2])
 define([AWS_ZONE], [us-west-2b])
-define([AMI_FREEBSD_12], [ami-0ec55ef66da2c9765])
-define([AMI_DEBIAN_9], [ami-0776d02f10dd9661f])
+define([AMI_FREEBSD_12_1], [ami-05c3afd6554d42483])
+define([AMI_DEBIAN_10], [ami-04146bb094b66105c])
 
 # EC2_CMD(<SUBCMD>, <ARGS>...)
 #
