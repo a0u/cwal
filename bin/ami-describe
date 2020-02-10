@@ -1,0 +1,19 @@
+#!/bin/sh
+
+region='us-west-2'
+
+while getopts 'r:' opt ; do
+	case ${opt} in
+	r) region=${OPTARG} ;;
+	?)
+		echo "usage: ${0} [-r region] [name]" >&2
+		exit 1 ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+exec aws ${region:+--region "${region}"} ec2 describe-images \
+	--owners 'aws-marketplace' \
+	--query 'sort_by(Images, &CreationDate)[*].[CreationDate,Name,ImageId]' \
+	--filters "Name=name,Values=${1:-FreeBSD}*" \
+	--output 'table'
