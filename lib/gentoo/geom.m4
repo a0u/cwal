@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
-# Copyright (C) 2019 Albert Ou <aou@eecs.berkeley.edu>
+# Copyright (C) 2019-2021 Albert Ou <aou@eecs.berkeley.edu>
 
 # CWAL_GPT(<DEVICES>, <PREFIX>, <BODY...>)
 #
@@ -29,7 +29,7 @@ define([CWAL_GPT_DESTROY],
 #
 define([CWAL_GPT_SAVE],
 [ifdef([_GPT_DEVICE],, [M4_FATAL([$0: must be used within CWAL_GPT macro])])]dnl
-[sgdisk -f CWAL_DEVNAME(_GPT_DEVICE())[]$1 _GPT_DEVICE()])
+[sgdisk -b CWAL_DEVNAME(_GPT_DEVICE())[]$1 _GPT_DEVICE()])
 
 # CWAL_GPT_PART(<SYMBOL>, <LABEL>, <TYPE>, [SIZE])
 #

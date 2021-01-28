@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
-# Copyright (C) 2019 Albert Ou <aou@eecs.berkeley.edu>
+# Copyright (C) 2019-2021 Albert Ou <aou@eecs.berkeley.edu>
 
 define([GENTOO_ARCH], [amd64])
 define([GENTOO_DISTNAME], [hardened+nomultilib])
 define([GENTOO_DISTSITE], [http://distfiles.gentoo.org/releases/GENTOO_ARCH()/autobuilds])
+define([GENTOO_PROFILE], [default/linux/amd64/17.1/no-multilib/hardened])
 
 # CWAL_CHROOT(<DIVNUM>, <CMD>)
 #
@@ -26,14 +27,16 @@ define([CWAL_KBUILDDIR], [/var/tmp/portage/linux])
 # Build and install a Linux kernel image from the predefined CONFIG.
 #
 define([CWAL_KERNEL],
-[CWAL_EMERGE(_KERNEL_, [M4_IFBLANK([$2], [sys-kernel/gentoo-sources], [$2])])]
+[CWAL_EMERGE(_KERNEL_, [M4_IFBLANK([$2], [sys-kernel/gentoo-sources], [$2])],
+[sys-kernel/linux-firmware], [sys-firmware/intel-microcode])]
+[CWAL_EMERGE(_KERNEL_, [-1], [app-arch/lz4])]
 [M4_DIVERT_TEXT(_KERNEL_,
 [export KBUILD_OUTPUT='CWAL_KBUILDDIR()']
 [install -o root -g root -m 0755 -d -- "CWAL_CHROOTDIR()/[$]{KBUILD_OUTPUT}"]
 [CWAL_FILE([$1], ["CWAL_CHROOTDIR()/[$]{KBUILD_OUTPUT}/.config"])])]
 [CWAL_CHROOT(_KERNEL_, [make -C /usr/src/linux olddefconfig])]
 [CWAL_CHROOT(_KERNEL_, [make -C /usr/src/linux -j "$(nproc)"])]
-[CWAL_CHROOT(_KERNEL_, [make -C /usr/src/linux install])]
+[CWAL_CHROOT(_KERNEL_, [make -C /usr/src/linux install modules_install])]
 [M4_DIVERT_TEXT(_KERNEL_, [unset KBUILD_OUTPUT])])
 
 ##
@@ -46,11 +49,14 @@ define([CWAL_KERNEL],
 #
 define([CWAL_SYSTEMDBOOT],
 [CWAL_EMERGE(_CONFIG_, [sys-boot/systemd-boot])]
-[CWAL_CHROOT(_CONFIG_, [bootctl --path CWAL_EFIDIR() install || :])]
+[M4_DIVERT_TEXT(_CONFIG_,
+[test -f CWAL_CHROOTDIR()/etc/machine-id || { uuidgen | tr -d '-' > CWAL_CHROOTDIR()/etc/machine-id ; }])]
+[CWAL_CHROOT(_CONFIG_, [bootctl --path CWAL_EFIDIR() install])]
 [M4_DIVERT_TEXT(_CONFIG_,
 [for vmlinuz in CWAL_CHROOTDIR([/boot/vmlinuz])* ; do break ; done]
 [for initramfs in CWAL_CHROOTDIR([/boot/initramfs])* ; do break ; done]
 [install -o root -g root -m 0444 -D -t CWAL_CHROOTDIR([CWAL_EFIDIR()/gentoo]) "[$]{vmlinuz}" "[$]{initramfs}"]
+[mkdir -p -- CWAL_CHROOTDIR([CWAL_EFIDIR()/loader/entries])]
 [cat > CWAL_CHROOTDIR([/CWAL_EFIDIR()/loader/loader.conf]) <<'!EOF']
 [default gentoo]
 [timeout 5]

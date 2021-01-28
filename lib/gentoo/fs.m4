@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
-# Copyright (C) 2019 Albert Ou <aou@eecs.berkeley.edu>
+# Copyright (C) 2019-2021 Albert Ou <aou@eecs.berkeley.edu>
 
 define([CWAL_CHROOTDIR], [/mnt/gentoo[]$1])
 
@@ -22,7 +22,7 @@ define([CWAL_FSTAB],
 [_CWAL_FSTAB([UUID=CWAL_UUID([$1])], shift($@))])
 
 
-# CWAL_BTRFS(<LABEL>, <DEVICE>, <SUBVOLUMES...>)
+# CWAL_BTRFS(<LABEL>, <DEVICE>, <OPTIONS>, <SUBVOLUMES...>)
 # Create a btrfs filesystem.
 #
 define([CWAL_BTRFS],
@@ -78,9 +78,10 @@ define([CWAL_SWAP],
 define([CWAL_VFAT],
 [M4_IFBLANK([$1], [M4_FATAL([$0: non-empty argument required for device])])]dnl
 [M4_IFBLANK([$4],, [M4_DIVERT_TEXT(_FORMAT_,
-[mkfs.vfat -F 32 -n $4 $1]
+[mkfs.vfat -F 32 -n $4 $1])])]dnl
+[M4_DIVERT_TEXT(_FORMAT_,
 [install -o root -g root -m 0755 -d CWAL_CHROOTDIR([$2])]
-[mount -o '$3' $1 CWAL_CHROOTDIR([$2])])])]dnl
+[mount -o '$3' $1 CWAL_CHROOTDIR([$2])])]dnl
 [CWAL_FSTAB([$1], [$2], [vfat], [$3], [0], [0])])
 
 define([CWAL_EFIDIR], [/boot/efi])

@@ -6,6 +6,7 @@ M4 ?= m4
 
 hosts := \
 	promptuary \
+	ratiocinator \
 	harvest \
 	1ess
 

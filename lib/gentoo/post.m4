@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
-# Copyright (C) 2019 Albert Ou <aou@eecs.berkeley.edu>
+# Copyright (C) 2019-2021 Albert Ou <aou@eecs.berkeley.edu>
 
 ##
 ## Stage 3
@@ -29,6 +29,12 @@ M4_DIVERT_TEXT(_INSTALL_,
 # Populate portage(5) tree.
 CWAL_CHROOT(_INSTALL_, [emerge-webrsync])
 
+# Select profile.
+CWAL_CHROOT(_INSTALL_, [eselect profile set GENTOO_PROFILE()])
+
+CWAL_CHROOT(_INSTALL_, [emerge --sync])
+CWAL_EMERGE(_INSTALL_, [-1], [sys-apps/portage])
+
 ##
 ## initramfs
 ##
@@ -44,7 +50,8 @@ M4_DIVERT_TEXT(_KERNEL_,
 ])]dnl
 [ifdef([_USE_BTRFS], [/BTRFS=/c BTRFS="yes"
 ])]dnl
-[/DEFAULT_KERNEL_CONFIG/a KERNEL_OUTPUTDIR="CWAL_KBUILDDIR()"]
+[/DEFAULT_KERNEL_CONFIG=/a KERNEL_OUTPUTDIR="CWAL_KBUILDDIR()"]
+[/COMPRESS_INITRD_TYPE=/c COMPRESS_INITRD_TYPE="lz4"]
 [' CWAL_CHROOTDIR([/etc/genkernel.conf])])
 
 # Generate genkernel(5) initramfs.
@@ -71,4 +78,4 @@ ifdef([_USE_FSTAB],
 
 # Set default root password.
 CWAL_CHROOT(_CONFIG_,
-[usermod root -p '$$6$$BPgZaqza$$1HeC3yye19BZn9jFJrQf/q52Fgwv1pfK6nI.n3ndQliXFx7VclHaW7U50e2OKbV5vqPmtk3uRTHY1S.otc.A20'])
+[usermod root -p '[$]6[$]AfAC6maIqOn5IUPB$nUYkPz62M9mrjC9pLB8V99AykxCdtG/4vw8r/LsRl6ctxFkffPf7rq8.MVPAWh6.mY/jVGjWJEmAJsS7.jyXI.'])
