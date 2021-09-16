@@ -25,14 +25,13 @@ define([CWAL_DISTFILES],
 
 define([CWAL_CONSOLE_EFI],
 [CWAL_LOADERCONF(
-[boot_multicons="YES"]
-[console="efi,vidconsole"],
+[console="efi"],
 [CWAL_CONSOLE])])
 
-define([CWAL_CONSOLE_SERIAL],
+define([CWAL_CONSOLE_EFI_SERIAL],
 [CWAL_LOADERCONF(
 [boot_multicons="YES"]
 [boot_serial="YES"]
-[console="comconsole,vidconsole"]
+[console="comconsole,efi"]
 [comconsole_speed="$1"],
 [CWAL_CONSOLE])])

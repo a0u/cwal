@@ -38,7 +38,7 @@ CWAL_CHMOD([1777], [/tmp], [/var/tmp])
 CWAL_TMPFS([/tmp], [rw,nosuid,mode=1777,late])
 CWAL_TMPFS([/usr/obj], [rw,nosuid,late])
 
-CWAL_DISTFILES([12.0-RELEASE], [base], [kernel])
+CWAL_DISTFILES([13.0-RELEASE], [base], [kernel])
 
 CWAL_CONSOLE_EFI()
 

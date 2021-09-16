@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
-# Copyright (C) 2018 Albert Ou <aou@eecs.berkeley.edu>
+# Copyright (C) 2018-2021 Albert Ou <aou@eecs.berkeley.edu>
 
 # CWAL_GPT(<DEVICES>, <PREFIX>, <BODY...>)
 #
@@ -38,7 +38,10 @@ define([CWAL_GPT_PART],
 define([CWAL_GPT_EFI],
 [CWAL_GPT_PART([$1], [$2], [efi], [ifelse([$3],, [512M], [$3])])[]]dnl
 [M4_DIVERT_TEXT(_CONFIG_,
-[gpart bootcode -p CWAL_CHROOTDIR([/boot/boot1.efifat]) -i _GPT_INDEX() _GPT_DEVICE()])])
+[newfs_msdos -F 32 -b 1024 -L ESP CWAL_DEVNODE([$1])]
+[mount -t msdosfs CWAL_DEVNODE([$1]) CWAL_CHROOTDIR([/boot/efi])]
+[install -d -o root -g wheel -m 0755 CWAL_CHROOTDIR([/boot/efi/EFI/Boot])]
+[install -p -o root -g wheel -m 0444 CWAL_CHROOTDIR([/boot/loader.efi]) CWAL_CHROOTDIR([/boot/efi/EFI/Boot/BOOTx64.efi])])])
 
 # CWAL_GPT_BIOS(<SYMBOL>, <LABEL>, [SIZE])
 # Add a BIOS boot partition and embed bootstrap code.

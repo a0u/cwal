@@ -20,7 +20,7 @@ define([CWAL_UFS],
 [newfs -O 2 -U -t -L $4 CWAL_DEVNODE([$1])]
 [install -d -o root -g wheel -m 0755 CWAL_CHROOTDIR([$2])]
 [mount -o '$3' CWAL_DEVNODE([$1]) CWAL_CHROOTDIR([$2])])]dnl
-[CWAL_FSTAB([CWAL_DEVNODE([$1])], [$2], [ufs], [$3], [0], [2])])
+[CWAL_FSTAB([CWAL_DEVNODE([$1])], [$2], [ufs], [$3], [0], [ifelse([$2], [/], [1], [2])])])
 
 # CWAL_ZPOOL(<POOL>, <VDEVS>, <DATASETS...>)
 # Create a ZFS pool.
@@ -44,6 +44,7 @@ define([CWAL_ZPOOL],
 [zfs_load="YES"]
 [vfs.root.mountfrom="zfs:$1/root"],
 [$0])]dnl
+[CWAL_SYSRC([zpool], ['zfs_enable=YES'])]dnl
 [CWAL_SYSRC([zfs], ['zfs_enable=YES'])]dnl
 [popdef([_ZFS_POOL])])
 
