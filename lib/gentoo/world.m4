@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
-# Copyright (C) 2019-2021 Albert Ou <aou@eecs.berkeley.edu>
+# Copyright (C) 2019-2022 Albert Ou <aou@eecs.berkeley.edu>
 
 define([GENTOO_ARCH], [amd64])
-define([GENTOO_DISTNAME], [hardened+nomultilib])
-define([GENTOO_DISTSITE], [http://distfiles.gentoo.org/releases/GENTOO_ARCH()/autobuilds])
+define([GENTOO_DISTNAME], [hardened-nomultilib-openrc])
+define([GENTOO_DISTSITE], [https://distfiles.gentoo.org/releases/GENTOO_ARCH()/autobuilds])
 define([GENTOO_PROFILE], [default/linux/amd64/17.1/no-multilib/hardened])
 
 # CWAL_CHROOT(<DIVNUM>, <CMD>)
