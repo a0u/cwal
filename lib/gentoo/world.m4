@@ -48,7 +48,7 @@ define([CWAL_KERNEL],
 # FIXME: bootctl(1) exits with a non-zero code due to missing /etc/machine-id file.
 #
 define([CWAL_SYSTEMDBOOT],
-[CWAL_EMERGE(_CONFIG_, [sys-boot/systemd-boot])]
+[CWAL_EMERGE(_CONFIG_, [sys-apps/systemd-utils])]
 [M4_DIVERT_TEXT(_CONFIG_,
 [test -f CWAL_CHROOTDIR()/etc/machine-id || { uuidgen | tr -d '-' > CWAL_CHROOTDIR()/etc/machine-id ; }])]
 [CWAL_CHROOT(_CONFIG_, [bootctl --path CWAL_EFIDIR() install])]
