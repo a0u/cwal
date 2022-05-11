@@ -51,7 +51,7 @@ M4_DIVERT_TEXT(_KERNEL_,
 [ifdef([_USE_BTRFS], [/BTRFS=/c BTRFS="yes"
 ])]dnl
 [/DEFAULT_KERNEL_CONFIG=/a KERNEL_OUTPUTDIR="CWAL_KBUILDDIR()"]
-[/COMPRESS_INITRD_TYPE=/c COMPRESS_INITRD_TYPE="lz4"]
+[/COMPRESS_INITRD_TYPE=/c COMPRESS_INITRD_TYPE="zstd"]
 [' CWAL_CHROOTDIR([/etc/genkernel.conf])])
 
 # Generate genkernel(5) initramfs.

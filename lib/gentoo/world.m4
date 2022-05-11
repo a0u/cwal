@@ -28,8 +28,8 @@ define([CWAL_KBUILDDIR], [/var/tmp/portage/linux])
 #
 define([CWAL_KERNEL],
 [CWAL_EMERGE(_KERNEL_, [M4_IFBLANK([$2], [sys-kernel/gentoo-sources], [$2])],
-[sys-kernel/linux-firmware], [sys-firmware/intel-microcode])]
-[CWAL_EMERGE(_KERNEL_, [-1], [app-arch/lz4])]
+[sys-kernel/linux-firmware], [sys-firmware/intel-microcode], [net-wireless/wireless-regdb])]
+[CWAL_EMERGE(_KERNEL_, [-1], [app-arch/zstd])]
 [M4_DIVERT_TEXT(_KERNEL_,
 [export KBUILD_OUTPUT='CWAL_KBUILDDIR()']
 [install -o root -g root -m 0755 -d -- "CWAL_CHROOTDIR()/[$]{KBUILD_OUTPUT}"]
